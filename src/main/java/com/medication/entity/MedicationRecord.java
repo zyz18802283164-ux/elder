@@ -1,6 +1,7 @@
 package com.medication.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -20,14 +21,20 @@ public class MedicationRecord {
     private Long planId;
     
     @TableField("scheduled_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime scheduledTime;
     
     @TableField("actual_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime actualTime;
     
     private String status;
     
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime createTime;
     
     @TableField(exist = false)

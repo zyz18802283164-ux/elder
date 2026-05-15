@@ -1,6 +1,7 @@
 package com.medication.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -19,6 +20,7 @@ public class EmergencyContact {
     private Integer priority;
     
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     
     @TableField(exist = false)

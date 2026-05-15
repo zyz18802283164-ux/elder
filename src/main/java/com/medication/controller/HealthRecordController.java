@@ -3,6 +3,7 @@ package com.medication.controller;
 import com.medication.dto.Result;
 import com.medication.entity.HealthRecord;
 import com.medication.service.HealthRecordService;
+import com.medication.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,14 +15,27 @@ public class HealthRecordController {
     @Autowired
     private HealthRecordService healthRecordService;
     
+    @Autowired
+    private PatientService patientService;
+    
     @GetMapping
     public Result<List<HealthRecord>> findAll() {
-        return Result.success(healthRecordService.list());
+        List<HealthRecord> list = healthRecordService.list();
+        for (HealthRecord record : list) {
+            if (record.getPatientId() != null) {
+                record.setPatient(patientService.getById(record.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/{id}")
     public Result<HealthRecord> findById(@PathVariable Long id) {
-        return Result.success(healthRecordService.getById(id));
+        HealthRecord record = healthRecordService.getById(id);
+        if (record != null && record.getPatientId() != null) {
+            record.setPatient(patientService.getById(record.getPatientId()));
+        }
+        return Result.success(record);
     }
     
     @PostMapping
@@ -44,6 +58,12 @@ public class HealthRecordController {
     
     @GetMapping("/patient/{patientId}")
     public Result<List<HealthRecord>> findByPatientId(@PathVariable Long patientId) {
-        return Result.success(healthRecordService.findByPatientId(patientId));
+        List<HealthRecord> list = healthRecordService.findByPatientId(patientId);
+        for (HealthRecord record : list) {
+            if (record.getPatientId() != null) {
+                record.setPatient(patientService.getById(record.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
 }

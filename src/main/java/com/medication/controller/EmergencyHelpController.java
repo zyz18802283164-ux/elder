@@ -3,6 +3,7 @@ package com.medication.controller;
 import com.medication.dto.Result;
 import com.medication.entity.EmergencyHelp;
 import com.medication.service.EmergencyHelpService;
+import com.medication.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,14 +15,27 @@ public class EmergencyHelpController {
     @Autowired
     private EmergencyHelpService emergencyHelpService;
     
+    @Autowired
+    private PatientService patientService;
+    
     @GetMapping
     public Result<List<EmergencyHelp>> findAll() {
-        return Result.success(emergencyHelpService.list());
+        List<EmergencyHelp> list = emergencyHelpService.list();
+        for (EmergencyHelp help : list) {
+            if (help.getPatientId() != null) {
+                help.setPatient(patientService.getById(help.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/{id}")
     public Result<EmergencyHelp> findById(@PathVariable Long id) {
-        return Result.success(emergencyHelpService.getById(id));
+        EmergencyHelp help = emergencyHelpService.getById(id);
+        if (help != null && help.getPatientId() != null) {
+            help.setPatient(patientService.getById(help.getPatientId()));
+        }
+        return Result.success(help);
     }
     
     @PostMapping
@@ -32,7 +46,13 @@ public class EmergencyHelpController {
     
     @GetMapping("/patient/{patientId}")
     public Result<List<EmergencyHelp>> findByPatientId(@PathVariable Long patientId) {
-        return Result.success(emergencyHelpService.findByPatientId(patientId));
+        List<EmergencyHelp> list = emergencyHelpService.findByPatientId(patientId);
+        for (EmergencyHelp help : list) {
+            if (help.getPatientId() != null) {
+                help.setPatient(patientService.getById(help.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @PostMapping("/create/{patientId}")

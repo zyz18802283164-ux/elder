@@ -1,6 +1,7 @@
 package com.medication.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -22,6 +23,8 @@ public class Medicine {
     private String interaction;
     
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime createTime;
     
     @TableField(fill = FieldFill.INSERT_UPDATE)

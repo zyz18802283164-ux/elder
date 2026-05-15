@@ -2,6 +2,7 @@ package com.medication.controller;
 
 import com.medication.dto.Result;
 import com.medication.entity.RiskAlert;
+import com.medication.service.PatientService;
 import com.medication.service.RiskAlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +14,28 @@ import java.util.List;
 public class RiskAlertController {
     @Autowired
     private RiskAlertService riskAlertService;
+
+    @Autowired
+    private PatientService patientService;
     
     @GetMapping
     public Result<List<RiskAlert>> findAll() {
-        return Result.success(riskAlertService.list());
+        List<RiskAlert> list = riskAlertService.list();
+        for (RiskAlert alert : list) {
+            if (alert.getPatientId() != null) {
+                alert.setPatient(patientService.getById(alert.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/{id}")
     public Result<RiskAlert> findById(@PathVariable Long id) {
-        return Result.success(riskAlertService.getById(id));
+        RiskAlert alert = riskAlertService.getById(id);
+        if (alert != null && alert.getPatientId() != null) {
+            alert.setPatient(patientService.getById(alert.getPatientId()));
+        }
+        return Result.success(alert);
     }
     
     @PostMapping
@@ -47,11 +61,23 @@ public class RiskAlertController {
     
     @GetMapping("/pending")
     public Result<List<RiskAlert>> findPending() {
-        return Result.success(riskAlertService.findPending());
+        List<RiskAlert> list = riskAlertService.findPending();
+        for (RiskAlert alert : list) {
+            if (alert.getPatientId() != null) {
+                alert.setPatient(patientService.getById(alert.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/patient/{patientId}")
     public Result<List<RiskAlert>> findByPatientId(@PathVariable Long patientId) {
-        return Result.success(riskAlertService.findByPatientId(patientId));
+        List<RiskAlert> list = riskAlertService.findByPatientId(patientId);
+        for (RiskAlert alert : list) {
+            if (alert.getPatientId() != null) {
+                alert.setPatient(patientService.getById(alert.getPatientId()));
+            }
+        }
+        return Result.success(list);
     }
 }

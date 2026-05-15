@@ -3,6 +3,8 @@ package com.medication.controller;
 import com.medication.dto.Result;
 import com.medication.entity.TreatmentPlan;
 import com.medication.service.TreatmentPlanService;
+import com.medication.service.PatientService;
+import com.medication.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,14 +16,38 @@ public class TreatmentPlanController {
     @Autowired
     private TreatmentPlanService treatmentPlanService;
     
+    @Autowired
+    private PatientService patientService;
+    
+    @Autowired
+    private MedicineService medicineService;
+    
     @GetMapping
     public Result<List<TreatmentPlan>> findAll() {
-        return Result.success(treatmentPlanService.list());
+        List<TreatmentPlan> list = treatmentPlanService.list();
+        for (TreatmentPlan plan : list) {
+            if (plan.getPatientId() != null) {
+                plan.setPatient(patientService.getById(plan.getPatientId()));
+            }
+            if (plan.getMedicineId() != null) {
+                plan.setMedicine(medicineService.getById(plan.getMedicineId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/{id}")
     public Result<TreatmentPlan> findById(@PathVariable Long id) {
-        return Result.success(treatmentPlanService.getById(id));
+        TreatmentPlan plan = treatmentPlanService.getById(id);
+        if (plan != null) {
+            if (plan.getPatientId() != null) {
+                plan.setPatient(patientService.getById(plan.getPatientId()));
+            }
+            if (plan.getMedicineId() != null) {
+                plan.setMedicine(medicineService.getById(plan.getMedicineId()));
+            }
+        }
+        return Result.success(plan);
     }
     
     @PostMapping
@@ -47,11 +73,29 @@ public class TreatmentPlanController {
     
     @GetMapping("/patient/{patientId}")
     public Result<List<TreatmentPlan>> findByPatientId(@PathVariable Long patientId) {
-        return Result.success(treatmentPlanService.findByPatientId(patientId));
+        List<TreatmentPlan> list = treatmentPlanService.findByPatientId(patientId);
+        for (TreatmentPlan plan : list) {
+            if (plan.getPatientId() != null) {
+                plan.setPatient(patientService.getById(plan.getPatientId()));
+            }
+            if (plan.getMedicineId() != null) {
+                plan.setMedicine(medicineService.getById(plan.getMedicineId()));
+            }
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/patient/{patientId}/active")
     public Result<List<TreatmentPlan>> findActiveByPatientId(@PathVariable Long patientId) {
-        return Result.success(treatmentPlanService.findActiveByPatientId(patientId));
+        List<TreatmentPlan> list = treatmentPlanService.findActiveByPatientId(patientId);
+        for (TreatmentPlan plan : list) {
+            if (plan.getPatientId() != null) {
+                plan.setPatient(patientService.getById(plan.getPatientId()));
+            }
+            if (plan.getMedicineId() != null) {
+                plan.setMedicine(medicineService.getById(plan.getMedicineId()));
+            }
+        }
+        return Result.success(list);
     }
 }

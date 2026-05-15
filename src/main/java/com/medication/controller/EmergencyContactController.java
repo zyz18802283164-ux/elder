@@ -2,7 +2,9 @@ package com.medication.controller;
 
 import com.medication.dto.Result;
 import com.medication.entity.EmergencyContact;
+import com.medication.entity.Patient;
 import com.medication.service.EmergencyContactService;
+import com.medication.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -13,10 +15,18 @@ import java.util.List;
 public class EmergencyContactController {
     @Autowired
     private EmergencyContactService emergencyContactService;
+    @Autowired
+    private PatientService patientService;
     
     @GetMapping
     public Result<List<EmergencyContact>> findAll() {
-        return Result.success(emergencyContactService.list());
+        List<EmergencyContact> list = emergencyContactService.list();
+        for (int i = 0; i < list.size(); i++) {
+            Long patientId = list.get(i).getPatientId();
+            Patient byId = patientService.getById(patientId);
+            list.get(i).setPatient(byId);
+        }
+        return Result.success(list);
     }
     
     @GetMapping("/{id}")
